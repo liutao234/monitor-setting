@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-CN" data-desktop-route="basic">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>基础设置 · 屏幕工作台</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="../glass.css">
+  <link rel="stylesheet" href="../desktop.css">
+  <link rel="stylesheet" href="../appearance.css">
+  <link rel="stylesheet" href="../startup.css">
+  <script src="../appearance.js"></script>
+  <script src="../startup.js"></script>
+  <script src="../desktop-routes.js"></script>
+  <script src="../desktop.js"></script>
+  <script src="../i18n.js" defer></script>
+  <script src="../desktop-translations.js" defer></script>
+  <script src="../smooth-corners.js" defer></script>
+  <script src="settings.js" defer></script>
+</head>
+<body>
+  <svg width="0" height="0" aria-hidden="true" style="position: absolute">
+    <defs>
+      <symbol id="monitor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></symbol>
+      <symbol id="laptop" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="13" rx="2"/><path d="M2 20h20"/></symbol>
+      <symbol id="scan" viewBox="0 0 24 24"><path d="M9 3H6a3 3 0 0 0-3 3v3m12-6h3a3 3 0 0 1 3 3v3m0 6v3a3 3 0 0 1-3 3h-3m-6 0H6a3 3 0 0 1-3-3v-3"/><rect x="8" y="8" width="8" height="6" rx="1"/><path d="M10 17h4"/></symbol>
+      <symbol id="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></symbol>
+      <symbol id="info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></symbol>
+      <symbol id="check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+      <symbol id="pattern" viewBox="0 0 320 180" preserveAspectRatio="none">
+        <path d="M-8 169 94 80l31 26L237 4h74L172 135l52 45M-8 142 92 54l32 26L214-2M230 182l-32-29L328 31M-8 114l99-87 30 25L181-2M275 183l-43-37 95-84" fill="none" stroke="currentColor" stroke-width="1" opacity=".55"/>
+        <path d="M17 18h14m-7-7v14M291 152h14m-7-7v14" fill="none" stroke="currentColor" opacity=".9"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <main class="page">
+    <div class="page-heading">
+      <h1>显示器设置</h1>
+    </div>
+    <nav class="tabs" aria-label="设置分类">
+      <a aria-current="page" href="index.html">基础设置</a>
+      <a href="../multi-display/index.html">多屏管理</a>
+      <a href="../color/index.html">色彩与 HDR</a>
+    </nav>
+
+    <div class="basic-layout">
+      <section class="panel" aria-labelledby="displays-title">
+        <div class="section-head">
+          <div>
+            <h2 id="displays-title" data-i18n="basic.connected">已连接的显示器</h2>
+            <p data-i18n="basic.choose">选择一块屏幕以调整它的设置。</p>
+          </div>
+          <button class="button" id="identify" type="button">
+            <svg class="icon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><use href="#scan"/></svg>
+            <span data-i18n="identify">识别显示器</span>
+          </button>
+        </div>
+        <div class="screen-stage">
+          <span class="connection-state"><i></i><span data-i18n="basic.connectedCount">2 台已连接</span></span>
+          <div class="screen-options" role="group" aria-label="选择显示器" data-i18n-aria="basic.chooseGroup">
+            <button type="button" id="display-1" class="screen-option laptop" aria-pressed="false" aria-label="1 号内建显示器">
+              <span class="bezel" aria-hidden="true">
+                <svg class="screen-pattern" preserveAspectRatio="none"><use href="#pattern"/></svg>
+                <span class="screen-index">1</span>
+                <svg class="selection-icon" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><use href="#check"/></svg>
+              </span>
+              <span class="stand" aria-hidden="true"></span>
+              <span class="screen-caption"><strong data-i18n="builtin">内建显示器</strong><span class="selected-label" data-i18n="basic.selected">已选中</span></span>
+              <span class="screen-detail" data-i18n="basic.builtinDetail">14 英寸 · 内部连接</span>
+            </button>
+            <button type="button" id="display-2" class="screen-option" aria-pressed="true" aria-label="2 号外接显示器">
+              <span class="bezel" aria-hidden="true">
+                <svg class="screen-pattern" preserveAspectRatio="none"><use href="#pattern"/></svg>
+                <span class="screen-index">2</span>
+                <svg class="selection-icon" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><use href="#check"/></svg>
+              </span>
+              <span class="stand" aria-hidden="true"></span>
+              <span class="screen-caption"><strong data-i18n="external">外接显示器</strong><span class="selected-label" data-i18n="basic.selected">已选中</span></span>
+              <span class="screen-detail" data-i18n="basic.externalDetail">27 英寸 · USB-C</span>
+            </button>
+          </div>
+          <p class="stage-status" id="identify-status" role="status">点击「识别显示器」可突出显示两块屏幕的编号。</p>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="device-name">
+        <div class="section-head">
+          <div class="active-device">
+            <span class="device-icon" aria-hidden="true"><svg class="icon" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use id="device-icon" href="#monitor"/></svg></span>
+            <div>
+              <div class="device-title">
+                <h2 id="device-name">外接显示器</h2>
+                <span class="selected-label" data-i18n="currentSelection">当前选择</span>
+              </div>
+              <p id="device-summary">2 号屏幕 · USB-C · 2560 × 1440 · 144 Hz</p>
+            </div>
+          </div>
+          <button class="button" id="reset" type="button" data-i18n="basic.reset">恢复默认</button>
+        </div>
+
+        <div class="settings-grid">
+          <div class="brightness-group">
+            <div class="brightness-label">
+              <h3><label for="brightness" data-i18n="basic.brightness">亮度</label></h3>
+              <output id="brightness-value" for="brightness" aria-live="off">72%</output>
+            </div>
+            <div class="brightness-slider">
+              <svg class="icon dim-icon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><use href="#sun"/></svg>
+              <input id="brightness" type="range" min="0" max="100" value="72" aria-valuetext="72%">
+              <svg class="icon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><use href="#sun"/></svg>
+            </div>
+            <p class="subtle" id="brightness-hint">调节这块屏幕的亮度。示例外接显示器支持亮度调节。</p>
+          </div>
+          <div class="format-group">
+            <h3 data-i18n="basic.format">画面规格</h3>
+            <div class="field"><label for="resolution" data-i18n="basic.resolution">分辨率</label><select id="resolution"></select></div>
+            <div class="field"><label for="scale" data-i18n="basic.scale">缩放</label><select id="scale"></select></div>
+            <div class="field"><label for="refresh-rate" data-i18n="basic.refreshRate">刷新率</label><select id="refresh-rate"></select></div>
+          </div>
+        </div>
+        <p class="sr-only" id="settings-status" role="status"></p>
+      </section>
+    </div>
+
+    <footer class="page-footer">
+      <svg class="icon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><use href="#info"/></svg>
+      设备与参数为示例，调整仅在此预览中生效。
+    </footer>
+  </main>
+</body>
+</html>
+

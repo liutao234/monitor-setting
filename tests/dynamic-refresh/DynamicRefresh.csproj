@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../native/DisplayService.cs" Link="DisplayService.cs" />
+    <Compile Include="../../native/DisplayCapabilities.cs" Link="DisplayCapabilities.cs" />
+    <Compile Include="../../native/DisplayLayout.cs" Link="DisplayLayout.cs" />
+    <Compile Include="../../native/DisplayDynamicRefresh.cs" Link="DisplayDynamicRefresh.cs" />
+    <Compile Include="../../native/DisplayNative.cs" Link="DisplayNative.cs" />
+    <Compile Include="../../native/Models.cs" Link="Models.cs" />
+  </ItemGroup>
+</Project>

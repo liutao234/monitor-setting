@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="zh-CN" data-desktop-route="color">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>色彩与 HDR · 屏幕工作台</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="../appearance.js"></script>
+  <script src="../startup.js"></script>
+  <script src="../desktop-routes.js"></script>
+  <script src="../desktop.js"></script>
+  <script src="../i18n.js" defer></script>
+  <script src="../desktop-translations.js" defer></script>
+  <script src="color.js" defer></script>
+  <style>
+    .color-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px 24px;
+      padding: 24px 28px;
+    }
+
+    .color-head h2, .color-head p,
+    .preview-head h3, .preview-head p,
+    .color-control h3, .color-control p { margin: 0; }
+    .color-head h2 { font-size: 1.125rem; }
+    .color-head p, .color-control p, .preview-head p {
+      color: var(--muted);
+      font-size: .875rem;
+      margin-top: 4px;
+    }
+
+    .color-devices {
+      display: flex;
+      gap: 6px;
+      padding: 4px;
+      background: rgba(209, 226, 248, .52);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: inset 0 1px 2px rgba(35, 76, 129, .08), inset 0 -1px rgba(255, 255, 255, .6);
+    }
+
+    .color-device {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      min-height: 40px;
+      padding: 6px 12px;
+      border: 1px solid transparent;
+      border-radius: 7px;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: .875rem;
+      cursor: pointer;
+    }
+
+    .color-device:hover { background: rgba(251, 254, 255, .64); color: var(--ink); }
+    .color-device[aria-pressed="true"] {
+      background: linear-gradient(154deg, rgba(255, 255, 255, .95), var(--accent-soft));
+      border-color: color-mix(in srgb, var(--accent) 22%, transparent);
+      box-shadow: inset 0 1px rgba(255, 255, 255, .92), 0 2px 5px rgba(41, 88, 152, .13);
+      color: var(--accent);
+      font-weight: 650;
+    }
+
+    .color-device-id {
+      display: grid;
+      place-items: center;
+      inline-size: 19px;
+      block-size: 19px;
+      background: rgba(248, 252, 255, .72);
+      border: 1px solid color-mix(in srgb, currentColor 50%, transparent);
+      border-radius: 4px;
+      font-size: .6875rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .color-body {
+      display: grid;
+      grid-template-columns: minmax(0, .95fr) minmax(0, 1fr);
+      grid-template-rows: auto 1fr;
+      grid-template-areas: "preview controls" "motion controls";
+      align-items: start;
+      column-gap: 32px;
+      padding: 24px 28px 28px;
+      border-top: 1px solid var(--line);
+    }
+
+    .color-preview { grid-area: preview; margin: 0; min-width: 0; }
+    .preview-head { margin-bottom: 12px; }
+    .preview-head h3, .color-control h3, .color-label { font-size: 1rem; font-weight: 650; }
+
+    .color-frame {
+      background: #172339;
+      padding: 15px 15px 12px;
+      color: #f2f7ff;
+      border-radius: 12px;
+      box-shadow: inset 0 1px rgba(234, 245, 255, .24), 0 5px 14px rgba(21, 52, 92, .18);
+    }
+
+    .sample-board {
+      --color-tint: #ffffff;
+      position: relative;
+      isolation: isolate;
+      display: grid;
+      grid-template-rows: 2fr 1fr 1fr;
+      gap: 4px;
+      width: 100%;
+      min-height: 144px;
+      aspect-ratio: 2.35;
+      overflow: hidden;
+      border-radius: 6px;
+      background: #273247;
+      filter: contrast(calc(var(--sample-contrast, 1) * var(--hdr-contrast, 1))) saturate(var(--hdr-saturation, 1));
+    }
+
+    .sample-board[data-hdr="true"] { --hdr-contrast: 1.15; --hdr-saturation: 1.12; }
+    .sample-board::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+      background: var(--color-tint);
+    }
+
+    .sample-row {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
+      gap: 4px;
+      filter: blur(var(--sample-blur, .65px));
+    }
+    .sample-row span { background: var(--patch); }
+    .sample-notes {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px 12px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      color: #d4e2f6;
+      font-size: .75rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .color-controls {
+      grid-area: controls;
+      min-width: 0;
+      padding-inline-start: 32px;
+      border-inline-start: 1px solid var(--line);
+    }
+
+    .color-control-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .color-value {
+      flex: none;
+      min-width: 52px;
+      max-width: 45%;
+      border-radius: 7px;
+      padding: 5px 9px;
+      background: color-mix(in srgb, var(--accent-soft) 82%, transparent);
+      color: var(--accent);
+      text-align: center;
+      font-weight: 650;
+      font-size: .875rem;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .color-slider {
+      display: block;
+      width: 100%;
+      height: 30px;
+      margin: 8px 0 0;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .color-slider:disabled, .color-select:disabled {
+      opacity: .52;
+      cursor: not-allowed;
+    }
+
+    .temperature-scale {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: .75rem;
+    }
+
+    .temperature-presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 13px;
+    }
+
+    .temperature-preset {
+      min-height: 34px;
+      padding: 4px 11px;
+      border-radius: 7px;
+      border: 1px solid var(--line);
+      background: rgba(249, 253, 255, .62);
+      color: var(--ink);
+      font: inherit;
+      font-size: .8125rem;
+      cursor: pointer;
+    }
+
+    .temperature-preset:hover { background: rgba(255, 255, 255, .84); }
+    .temperature-preset[aria-pressed="true"] {
+      border-color: color-mix(in srgb, var(--accent) 23%, transparent);
+      background: var(--accent-soft);
+      color: var(--accent);
+      box-shadow: inset 0 1px rgba(255, 255, 255, .84);
+    }
+
+    .color-control + .color-control {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .hdr-control, .response-control {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px 12px;
+    }
+
+    .response-control { flex-wrap: wrap; }
+    .response-control > div { flex: 1 1 150px; }
+    .color-select { flex: 0 1 auto; }
+
+    .response-label {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px 8px;
+    }
+
+    .support-label {
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(203, 218, 237, .40);
+      color: var(--muted);
+      font-size: .75rem;
+    }
+
+    .color-value[data-unavailable="true"] {
+      background: rgba(203, 218, 237, .40);
+      color: var(--muted);
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .motion-preview {
+      grid-area: motion;
+      min-width: 0;
+      margin: 24px 0 0;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+    }
+
+    .motion-track {
+      position: relative;
+      height: 52px;
+      overflow: hidden;
+      border-radius: 8px;
+      background: #172339;
+      box-shadow: inset 0 1px rgba(234, 245, 255, .24);
+    }
+
+    .motion-track::before {
+      content: "";
+      position: absolute;
+      inset: 50% 0 auto;
+      border-top: 1px dashed #4d6080;
+    }
+
+    .motion-marker {
+      position: absolute;
+      top: 50%;
+      left: 52%;
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      background: #e1f0ff;
+      transform: translate(-50%, -50%);
+    }
+
+    .motion-marker::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 100%;
+      width: var(--motion-trail, 48px);
+      height: 100%;
+      background: linear-gradient(90deg, transparent, #8bb9ee);
+    }
+
+    .motion-track[data-response="fast"] { --motion-trail: 26px; }
+    .motion-track[data-response="fastest"] { --motion-trail: 12px; }
+
+    .motion-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      margin-top: 10px;
+    }
+
+    .motion-mode { color: var(--muted); font-size: .8125rem; }
+    .motion-play { white-space: normal; }
+
+    .hdr-status { display: flex; align-items: center; gap: 10px; }
+    .hdr-status-text { color: var(--muted); font-size: .75rem; white-space: nowrap; }
+    .hdr-switch {
+      appearance: none;
+      position: relative;
+      flex: none;
+      width: 44px;
+      height: 25px;
+      margin: 0;
+      border: 1px solid #7186a3;
+      border-radius: 20px;
+      background: #d2deee;
+      box-shadow: inset 0 1px 2px rgba(32, 65, 108, .19);
+      cursor: pointer;
+    }
+
+    .hdr-switch::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      background: #fbfdff;
+      box-shadow: 0 1px 3px rgba(22, 47, 83, .34);
+      transition: transform 150ms ease;
+    }
+
+    .hdr-switch:checked {
+      border-color: var(--accent);
+      background: linear-gradient(#317af0, var(--accent));
+    }
+    .hdr-switch:checked::after { transform: translateX(19px); }
+    .hdr-switch:disabled { opacity: .48; cursor: not-allowed; }
+
+    .color-devices, .color-device, .color-device-id, .color-frame, .sample-board,
+    .color-value, .temperature-preset, .support-label, .motion-track, .motion-marker {
+      corner-shape: squircle;
+    }
+
+    @media (max-width: 720px) {
+      .color-head { align-items: stretch; flex-direction: column; padding: 20px; }
+      .color-devices { align-self: flex-start; max-width: 100%; }
+      .color-device { gap: 6px; padding-inline: 8px; }
+      .color-body {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto;
+        grid-template-areas: "preview" "controls" "motion";
+        gap: 20px;
+        padding: 20px;
+      }
+      .motion-preview { margin-top: 0; }
+      .color-controls { padding: 20px 0 0; border-inline-start: 0; border-top: 1px solid var(--line); }
+    }
+
+    @media (max-width: 365px) {
+      .color-devices { flex-wrap: wrap; }
+      .color-device { flex: 1; }
+      .hdr-control { align-items: flex-start; }
+      .hdr-status { flex-direction: column-reverse; gap: 5px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hdr-switch::after { transition: none; }
+    }
+  </style>
+  <link rel="stylesheet" href="../glass.css">
+  <link rel="stylesheet" href="../desktop.css">
+  <link rel="stylesheet" href="../appearance.css">
+  <link rel="stylesheet" href="../startup.css">
+  <script src="../smooth-corners.js" defer></script>
+</head>
+<body>
+
+  <main class="page">
+    <div class="page-heading">
+      <h1>显示器设置</h1>
+    </div>
+    <nav class="tabs" aria-label="设置分类">
+      <a href="../basic/index.html">基础设置</a>
+      <a href="../multi-display/index.html">多屏管理</a>
+      <a aria-current="page" href="../color/index.html">色彩与 HDR</a>
+    </nav>
+
+    <section class="panel color-panel" aria-labelledby="color-title">
+      <header class="color-head">
+        <div>
+          <h2 id="color-title" data-i18n="colorTab">色彩与 HDR</h2>
+          <p id="color-selected" role="status">当前选择：外接显示器 · USB-C</p>
+        </div>
+        <div class="color-devices" role="group" aria-label="选择显示器" data-i18n-aria="color.chooseDisplay">
+          <button class="color-device" type="button" data-color-device="1" aria-pressed="false">
+            <span class="color-device-id" aria-hidden="true">1</span><span data-i18n="builtin">内建显示器</span>
+          </button>
+          <button class="color-device" type="button" data-color-device="2" aria-pressed="true">
+            <span class="color-device-id" aria-hidden="true">2</span><span data-i18n="external">外接显示器</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="color-body">
+        <figure class="color-preview">
+          <figcaption class="preview-head">
+            <h3 data-i18n="color.preview">色彩预览</h3>
+            <p data-i18n="color.previewHint">用色块和灰阶查看色调、明暗和边缘变化。</p>
+          </figcaption>
+          <div class="color-frame">
+            <div class="sample-board" id="color-sample" data-hdr="false" aria-hidden="true">
+              <div class="sample-row">
+                <span style="--patch:#c66b64"></span>
+                <span style="--patch:#dca362"></span>
+                <span style="--patch:#82a789"></span>
+                <span style="--patch:#6c9db5"></span>
+                <span style="--patch:#9b85c3"></span>
+              </div>
+              <div class="sample-row">
+                <span style="--patch:#f1d3bd"></span>
+                <span style="--patch:#b48872"></span>
+                <span style="--patch:#6e7761"></span>
+                <span style="--patch:#6d80a7"></span>
+                <span style="--patch:#d5c8e4"></span>
+              </div>
+              <div class="sample-row">
+                <span style="--patch:#f8f8f8"></span>
+                <span style="--patch:#d4d4d4"></span>
+                <span style="--patch:#adadad"></span>
+                <span style="--patch:#858585"></span>
+                <span style="--patch:#5c5c5c"></span>
+                <span style="--patch:#353535"></span>
+                <span style="--patch:#171717"></span>
+              </div>
+            </div>
+            <div class="sample-notes">
+              <span id="sample-temperature">白点 6500 K</span>
+              <span id="sample-dynamic-range">标准动态范围</span>
+            </div>
+          </div>
+        </figure>
+
+        <div class="color-controls">
+          <div class="color-control">
+            <div class="color-control-head">
+              <div>
+                <label class="color-label" for="temperature" data-i18n="color.temperature">色温</label>
+                <p id="temperature-hint" data-i18n="color.temperatureHint">数值越低，画面越偏暖。</p>
+              </div>
+              <span class="color-value" id="temperature-value" aria-hidden="true">6500 K</span>
+            </div>
+            <input class="color-slider" id="temperature" type="range" min="2700" max="8500" step="100" value="6500" aria-valuetext="6500 K" aria-describedby="temperature-hint">
+            <div class="temperature-scale" aria-hidden="true"><span data-i18n="color.temperatureMin">2700 K 暖</span><span data-i18n="color.temperatureMax">8500 K 冷</span></div>
+            <div class="temperature-presets" role="group" aria-label="色温预设" data-i18n-aria="color.presets">
+              <button class="temperature-preset" type="button" data-temperature="3200" aria-pressed="false" data-i18n="color.warm">暖色</button>
+              <button class="temperature-preset" type="button" data-temperature="6500" aria-pressed="true" data-i18n="color.standard">标准</button>
+              <button class="temperature-preset" type="button" data-temperature="8000" aria-pressed="false" data-i18n="color.cool">冷色</button>
+            </div>
+          </div>
+
+          <div class="color-control">
+            <div class="color-control-head">
+              <div>
+                <label class="color-label" for="contrast" data-i18n="color.contrast">对比度</label>
+                <p id="contrast-hint" data-i18n="color.contrastHint">调整亮部与暗部的差异。</p>
+              </div>
+              <span class="color-value" id="contrast-value" aria-hidden="true">50</span>
+            </div>
+            <input class="color-slider" id="contrast" type="range" min="0" max="100" value="50" aria-describedby="contrast-hint">
+          </div>
+
+          <div class="color-control">
+            <div class="color-control-head">
+              <div>
+                <label class="color-label" for="sharpness" data-i18n="color.sharpness">锐度</label>
+                <p id="sharpness-hint">调整色块边缘的清晰程度。</p>
+              </div>
+              <span class="color-value" id="sharpness-value" aria-hidden="true">50</span>
+            </div>
+            <input class="color-slider" id="sharpness" type="range" min="0" max="100" value="50" aria-describedby="sharpness-hint">
+          </div>
+
+          <div class="color-control hdr-control">
+            <div>
+              <h3><label for="hdr">HDR</label></h3>
+              <p id="hdr-hint">预览更明亮的高光和更深的阴影。</p>
+            </div>
+            <div class="hdr-status">
+              <span class="hdr-status-text" id="hdr-status" aria-hidden="true">已关闭</span>
+              <input class="hdr-switch" id="hdr" type="checkbox" role="switch" aria-describedby="hdr-hint">
+            </div>
+          </div>
+
+          <div class="color-control response-control">
+            <div>
+              <div class="response-label">
+                <label class="color-label" for="response" data-i18n="color.response">响应速度</label>
+                <span class="support-label" id="response-unsupported" data-i18n="notSupported" aria-hidden="true" hidden>不支持</span>
+              </div>
+              <p id="response-hint">选择像素响应档位。</p>
+            </div>
+            <select class="color-select" id="response" aria-describedby="response-hint">
+              <option value="standard" data-i18n="color.standard">标准</option>
+              <option value="fast" data-i18n="color.fast">快速</option>
+              <option value="fastest" data-i18n="color.fastest">最快</option>
+            </select>
+          </div>
+        </div>
+
+        <figure class="motion-preview">
+          <figcaption class="preview-head">
+            <h3 data-i18n="color.motionPreview">动态响应预览</h3>
+            <p data-i18n="color.motionHint">响应越快，示意色块的拖影越短。</p>
+          </figcaption>
+          <div class="motion-track" id="motion-track" data-response="standard" aria-hidden="true">
+            <span class="motion-marker" id="motion-marker"></span>
+          </div>
+          <div class="motion-footer">
+            <span class="motion-mode" id="motion-mode">当前响应：标准</span>
+            <button class="button motion-play" id="motion-play" type="button" data-i18n="color.playMotion">播放动态预览</button>
+          </div>
+        </figure>
+      </div>
+    </section>
+
+    <footer class="page-footer">设备与参数为示例，调整仅在此预览中生效。</footer>
+  </main>
+
+</body>
+</html>
+

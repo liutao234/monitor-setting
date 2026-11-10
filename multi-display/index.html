@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-CN" data-desktop-route="multi-display">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>多屏管理 · 屏幕工作台</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="arrangement.css">
+  <link rel="stylesheet" href="../glass.css">
+  <link rel="stylesheet" href="../desktop.css">
+  <link rel="stylesheet" href="../appearance.css">
+  <link rel="stylesheet" href="../startup.css">
+  <script src="../appearance.js"></script>
+  <script src="../startup.js"></script>
+  <script src="../desktop-routes.js"></script>
+  <script src="../desktop.js"></script>
+  <script src="../i18n.js" defer></script>
+  <script src="../desktop-translations.js" defer></script>
+  <script src="../smooth-corners.js" defer></script>
+  <script src="translations.js" defer></script>
+  <script src="arrangement.js" defer></script>
+</head>
+<body>
+
+  <main class="page">
+    <div class="page-heading"><h1>显示器设置</h1></div>
+    <nav class="tabs" aria-label="设置分类"><a href="../basic/index.html">基础设置</a><a aria-current="page" href="../multi-display/index.html">多屏管理</a><a href="../color/index.html">色彩与 HDR</a></nav>
+
+    <div class="multi-layout">
+      <section class="panel" aria-labelledby="arrangement-heading">
+        <div class="section-head arrangement-head">
+          <div>
+            <h2 id="arrangement-heading" data-i18n="multi.arrangement">显示器排列</h2>
+            <p id="arrangement-help">拖动屏幕可吸附到另一块屏幕的上、下、左、右。选中屏幕后也可用方向键。</p>
+          </div>
+          <button id="identify" class="button" type="button">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3H5a2 2 0 0 0-2 2v4m12-6h4a2 2 0 0 1 2 2v4M3 15v4a2 2 0 0 0 2 2h4m12-6v4a2 2 0 0 1-2 2h-4"/><circle cx="12" cy="12" r="3"/></svg>
+            <span data-i18n="identify">识别显示器</span>
+          </button>
+        </div>
+
+        <div class="arrangement-stage" id="arrangement-stage" data-mode="extend" data-position="left">
+          <div class="arrangement-devices">
+            <div class="arrangement-device" id="built-in-display" data-device="1">
+              <button class="device-select" type="button" aria-label="1 内建显示器" aria-pressed="true" aria-describedby="arrangement-help" aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight">
+                <span class="device-drawing" aria-hidden="true"><span class="device-screen"><span class="device-number">1</span></span><span class="device-stand"></span></span>
+                <span class="device-caption"><span class="device-name" data-i18n="builtin">内建显示器</span><span class="device-primary" data-i18n="primaryDisplay">主显示器</span></span>
+              </button>
+            </div>
+            <div class="arrangement-device" id="external-display" data-device="2">
+              <button class="device-select" type="button" aria-label="2 外接显示器" aria-pressed="false" aria-describedby="arrangement-help" aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight">
+                <span class="device-drawing" aria-hidden="true"><span class="device-screen"><span class="device-number">2</span></span><span class="device-stand"></span></span>
+                <span class="device-caption"><span class="device-name" data-i18n="external">外接显示器</span><span class="device-primary" data-i18n="primaryDisplay" hidden>主显示器</span></span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="arrangement-foot">
+          <p class="subtle" id="arrangement-note">内建显示器位于外接显示器左侧。</p>
+          <div class="position-control">
+            <label for="display-position" id="position-label">1 · 内建显示器的位置</label>
+            <select id="display-position" aria-describedby="arrangement-note">
+              <option value="left" data-i18n="multi.left">左侧</option>
+              <option value="right" data-i18n="multi.right">右侧</option>
+              <option value="top" data-i18n="multi.top">上方</option>
+              <option value="bottom" data-i18n="multi.bottom">下方</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <div class="multi-controls">
+        <section class="panel" aria-labelledby="mode-heading">
+          <div class="section-head"><div><h2 id="mode-heading" data-i18n="multi.mode">显示模式</h2><p data-i18n="multi.modeHelp">选择两块屏幕如何显示内容。</p></div></div>
+          <div class="config-row">
+            <div><label for="display-mode" data-i18n="multi.modeLabel">多屏模式</label><p id="mode-note" class="subtle">将桌面扩展到两块屏幕，可在屏幕之间移动窗口。</p></div>
+            <select id="display-mode" aria-describedby="mode-note">
+              <option value="extend" data-i18n="multi.extend">扩展显示</option>
+              <option value="mirror" data-i18n="multi.mirror">镜像显示</option>
+              <option value="builtin" data-i18n="multi.onlyBuiltin">仅内建显示器</option>
+              <option value="external" data-i18n="multi.onlyExternal">仅外接显示器</option>
+            </select>
+          </div>
+          <div class="config-row">
+            <div><label for="primary-display" data-i18n="primaryDisplay">主显示器</label><p id="primary-note" class="subtle">指定扩展桌面中主要使用的屏幕。</p></div>
+            <select id="primary-display" aria-describedby="primary-note"><option value="1">1 · 内建显示器</option><option value="2">2 · 外接显示器</option></select>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="orientation-heading">
+          <div class="section-head"><div><h2 id="orientation-heading" data-i18n="multi.orientation">屏幕方向</h2><p data-i18n="multi.orientationHelp">分别设置每块屏幕的横向或纵向显示。</p></div></div>
+          <div class="config-row">
+            <div><label for="builtin-orientation">1 · 内建显示器</label><p id="builtin-orientation-note" class="subtle" hidden></p></div>
+            <select id="builtin-orientation" aria-describedby="builtin-orientation-note">
+              <option value="landscape" data-i18n="multi.landscape">横向</option>
+              <option value="portrait" data-i18n="multi.portrait">纵向</option>
+            </select>
+          </div>
+          <div class="config-row">
+            <div><label for="external-orientation">2 · 外接显示器</label><p id="external-orientation-note" class="subtle" hidden></p></div>
+            <select id="external-orientation" aria-describedby="external-orientation-note">
+              <option value="landscape" data-i18n="multi.landscape">横向</option>
+              <option value="portrait" data-i18n="multi.portrait">纵向</option>
+            </select>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <p class="sr-only" id="arrangement-status" role="status"></p>
+    <footer class="page-footer">设备与参数为示例，调整仅在此预览中生效。</footer>
+  </main>
+</body>
+</html>
+

@@ -1,1 +1,5 @@
 /Release/
+bin/
+obj/
+/dist/
+/scripts/release-assets/install/MicrosoftEdgeWebView2Setup.exe

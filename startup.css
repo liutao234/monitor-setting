@@ -1,0 +1,54 @@
+/* Discovery has one symbolic screen, never a fabricated device or count. */
+#startup-scene {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  overflow: hidden;
+  contain: layout paint;
+}
+.startup-monitor { width: 168px; color: var(--accent); }
+.startup-monitor-bezel {
+  padding: 7px;
+  border: 1.5px solid color-mix(in srgb, var(--accent) 55%, var(--line));
+  border-radius: 24px;
+  corner-shape: squircle;
+  background: var(--glass);
+  box-shadow: var(--glass-shadow);
+  animation: startup-screen-wake 1.8s ease-in-out infinite;
+}
+.startup-monitor-screen {
+  position: relative;
+  height: 94px;
+  overflow: hidden;
+  border-radius: 16px;
+  corner-shape: squircle;
+  background: var(--accent-soft);
+}
+.startup-monitor-scan {
+  position: absolute;
+  inset: 46px 16px auto;
+  height: 2px;
+  background: currentColor;
+  opacity: .3;
+  animation: startup-screen-scan 1.8s ease-in-out infinite;
+}
+.startup-monitor-neck { width: 4px; height: 14px; margin: 0 auto; background: var(--muted); opacity: .65; }
+.startup-monitor-foot { width: 54px; height: 3px; margin: 0 auto; border-radius: 2px; background: var(--muted); opacity: .65; }
+@keyframes startup-screen-wake { 0%, 100% { opacity: .6; } 50% { opacity: 1; } }
+@keyframes startup-screen-scan {
+  0% { transform: translateY(-30px) scaleX(.7); opacity: 0; }
+  35%, 65% { opacity: .45; }
+  100% { transform: translateY(30px) scaleX(1); opacity: 0; }
+}
+[data-startup-paused] #startup-scene * { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  #startup-scene * { animation: none; }
+  .startup-monitor-scan { opacity: .2; }
+}
+@media (forced-colors: active) {
+  .startup-monitor-bezel { border-color: CanvasText; box-shadow: none; }
+  .startup-monitor-screen { background: Canvas; }
+  .startup-monitor-scan, .startup-monitor-neck, .startup-monitor-foot { background: CanvasText; }
+}
